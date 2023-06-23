@@ -7,6 +7,8 @@ import {
   Error,
   StartScreen,
   Questions,
+  NextButton,
+  Progress,
 } from "./components/index.js";
 const initialState = {
   questions: [],
@@ -43,6 +45,12 @@ const reducer = (state, action) => {
             ? state.points + question.points
             : state.points,
       };
+    case "nextQuestion":
+      return {
+        ...state,
+        index: state.index++,
+        answer: null,
+      };
     default:
       return state;
   }
@@ -51,6 +59,9 @@ const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { questions, status, index, answer, points } = state;
   const totalQuestions = questions.length;
+  const totalPoints = questions.reduce((prev, cur) => prev + cur.points, 0);
+  console.log(totalPoints);
+  const hasAnswered = answer !== null;
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
@@ -70,6 +81,9 @@ const App = () => {
   const handleAnswer = (answer) => {
     dispatch({ type: "answer", payload: answer });
   };
+  const handleNextQuestion = () => {
+    dispatch({ type: "nextQuestion" });
+  };
   return (
     <div className='app'>
       <Header />
@@ -80,11 +94,21 @@ const App = () => {
           <StartScreen totalQuestions={totalQuestions} startQuiz={startQuiz} />
         )}
         {status === "active" && (
-          <Questions
-            questions={questions[index]}
-            onAnswer={handleAnswer}
-            answer={answer}
-          />
+          <>
+            <Progress
+              index={index}
+              totalQuestions={totalQuestions}
+              points={points}
+              totalPoints={totalPoints}
+              hasAnswered={hasAnswered}
+            />
+            <Questions
+              questions={questions[index]}
+              onAnswer={handleAnswer}
+              answer={answer}
+            />
+            {hasAnswered && <NextButton onClick={handleNextQuestion} />}
+          </>
         )}
       </Main>
     </div>
