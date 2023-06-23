@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { useEffect, useReducer } from "react";
 import {
   Header,
@@ -11,6 +12,8 @@ const initialState = {
   questions: [],
   status: "loading",
   index: 0,
+  answer: null,
+  points: 0,
 };
 const reducer = (state, action) => {
   switch (action.type) {
@@ -30,13 +33,23 @@ const reducer = (state, action) => {
         ...state,
         status: "active",
       };
+    case "answer":
+      const question = state.questions[state.index];
+      return {
+        ...state,
+        answer: action.payload,
+        points:
+          action.payload === question.correctOption
+            ? state.points + question.points
+            : state.points,
+      };
     default:
       return state;
   }
 };
 const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { questions, status, index } = state;
+  const { questions, status, index, answer, points } = state;
   const totalQuestions = questions.length;
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -54,6 +67,9 @@ const App = () => {
   const startQuiz = () => {
     dispatch({ type: "startQuiz" });
   };
+  const handleAnswer = (answer) => {
+    dispatch({ type: "answer", payload: answer });
+  };
   return (
     <div className='app'>
       <Header />
@@ -63,7 +79,13 @@ const App = () => {
         {status === "ready" && questions.length > 0 && (
           <StartScreen totalQuestions={totalQuestions} startQuiz={startQuiz} />
         )}
-        {status === "active" && <Questions questions={questions[index]} />}
+        {status === "active" && (
+          <Questions
+            questions={questions[index]}
+            onAnswer={handleAnswer}
+            answer={answer}
+          />
+        )}
       </Main>
     </div>
   );
