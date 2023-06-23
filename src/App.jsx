@@ -60,6 +60,13 @@ const reducer = (state, action) => {
         highScore:
           state.highScore > state.points ? state.highScore : state.points,
       };
+    case "restart": {
+      return {
+        ...initialState,
+        questions: state.questions,
+        status: "ready",
+      };
+    }
     default:
       return state;
   }
@@ -96,6 +103,9 @@ const App = () => {
   const handleFinishScreen = () => {
     dispatch({ type: "finish" });
   };
+  const handleRestartQuiz = () => {
+    dispatch({ type: "restart" });
+  };
   return (
     <div className='app'>
       <Header />
@@ -130,7 +140,12 @@ const App = () => {
           </>
         )}
         {status === "finished" && (
-          <FinishScreen points={points} totalPoints={totalPoints} highScore={highScore}/>
+          <FinishScreen
+            points={points}
+            totalPoints={totalPoints}
+            highScore={highScore}
+            onRestart={handleRestartQuiz}
+          />
         )}
       </Main>
     </div>

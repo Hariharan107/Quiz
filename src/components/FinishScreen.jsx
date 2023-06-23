@@ -1,4 +1,5 @@
-const FinishScreen = ({ points, totalPoints, highScore }) => {
+import { RestartButton } from "./index.js";
+const FinishScreen = ({ points, totalPoints, highScore, onRestart }) => {
   const percentage = (points / totalPoints) * 100;
   let emoji;
   if (percentage === 100) emoji = "🥇";
@@ -13,6 +14,7 @@ const FinishScreen = ({ points, totalPoints, highScore }) => {
         {totalPoints} ({Math.ceil(percentage)}%)
       </p>
       <p className='highscore'>Highscore: {highScore} points</p>
+      <RestartButton onRestart={onRestart} />
     </>
   );
 };

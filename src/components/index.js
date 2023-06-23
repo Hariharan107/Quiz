@@ -7,6 +7,7 @@ import Questions from "./Questions";
 import FinishScreen from "./FinishScreen";
 import NextButton from "../utils/NextButton";
 import Progress from "../utils/Progress";
+import RestartButton from "../utils/RestartButton";
 export {
   Header,
   Loader,
@@ -17,4 +18,5 @@ export {
   NextButton,
   Progress,
   FinishScreen,
+  RestartButton
 };
