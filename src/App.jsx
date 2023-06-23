@@ -10,6 +10,8 @@ import {
   NextButton,
   Progress,
   FinishScreen,
+  Footer,
+  Timer,
 } from "./components/index.js";
 const initialState = {
   questions: [],
@@ -18,7 +20,9 @@ const initialState = {
   answer: null,
   points: 0,
   highScore: 0,
+  timeRemaining: null,
 };
+const SECS_PER_QUES = 30;
 const reducer = (state, action) => {
   switch (action.type) {
     case "dataReceived":
@@ -36,6 +40,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         status: "active",
+        timeRemaining: state.questions.length * SECS_PER_QUES,
       };
     case "answer":
       const question = state.questions[state.index];
@@ -67,13 +72,21 @@ const reducer = (state, action) => {
         status: "ready",
       };
     }
+    case "timer":
+      return {
+        ...state,
+        timeRemaining: state.timeRemaining - 1,
+        status: state.timeRemaining === 0 ? "finished" : state.status,
+      };
+
     default:
       return state;
   }
 };
 const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { questions, status, index, answer, points, highScore } = state;
+  const { questions, status, index, answer, points, highScore, timeRemaining } =
+    state;
   const totalQuestions = questions.length;
   const totalPoints = questions.reduce((prev, cur) => prev + cur.points, 0);
 
@@ -106,6 +119,9 @@ const App = () => {
   const handleRestartQuiz = () => {
     dispatch({ type: "restart" });
   };
+  const handleTimer = () => {
+    dispatch({ type: "timer" });
+  };
   return (
     <div className='app'>
       <Header />
@@ -129,14 +145,17 @@ const App = () => {
               onAnswer={handleAnswer}
               answer={answer}
             />
-            {hasAnswered && (
-              <NextButton
-                onClick={handleNextQuestion}
-                index={index}
-                totalQuestions={totalQuestions}
-                onFinish={handleFinishScreen}
-              />
-            )}
+            <Footer>
+              <Timer onTimer={handleTimer} timeRemaining={timeRemaining} />
+              {hasAnswered && (
+                <NextButton
+                  onClick={handleNextQuestion}
+                  index={index}
+                  totalQuestions={totalQuestions}
+                  onFinish={handleFinishScreen}
+                />
+              )}
+            </Footer>
           </>
         )}
         {status === "finished" && (
