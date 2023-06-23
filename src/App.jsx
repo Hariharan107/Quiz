@@ -9,6 +9,7 @@ import {
   Questions,
   NextButton,
   Progress,
+  FinishScreen,
 } from "./components/index.js";
 const initialState = {
   questions: [],
@@ -16,6 +17,7 @@ const initialState = {
   index: 0,
   answer: null,
   points: 0,
+  highScore: 0,
 };
 const reducer = (state, action) => {
   switch (action.type) {
@@ -51,16 +53,23 @@ const reducer = (state, action) => {
         index: state.index++,
         answer: null,
       };
+    case "finish":
+      return {
+        ...state,
+        status: "finished",
+        highScore:
+          state.highScore > state.points ? state.highScore : state.points,
+      };
     default:
       return state;
   }
 };
 const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { questions, status, index, answer, points } = state;
+  const { questions, status, index, answer, points, highScore } = state;
   const totalQuestions = questions.length;
   const totalPoints = questions.reduce((prev, cur) => prev + cur.points, 0);
-  console.log(totalPoints);
+
   const hasAnswered = answer !== null;
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -83,6 +92,9 @@ const App = () => {
   };
   const handleNextQuestion = () => {
     dispatch({ type: "nextQuestion" });
+  };
+  const handleFinishScreen = () => {
+    dispatch({ type: "finish" });
   };
   return (
     <div className='app'>
@@ -107,8 +119,18 @@ const App = () => {
               onAnswer={handleAnswer}
               answer={answer}
             />
-            {hasAnswered && <NextButton onClick={handleNextQuestion} />}
+            {hasAnswered && (
+              <NextButton
+                onClick={handleNextQuestion}
+                index={index}
+                totalQuestions={totalQuestions}
+                onFinish={handleFinishScreen}
+              />
+            )}
           </>
+        )}
+        {status === "finished" && (
+          <FinishScreen points={points} totalPoints={totalPoints} highScore={highScore}/>
         )}
       </Main>
     </div>

@@ -1,10 +1,16 @@
 
-const NextButton = ({onClick}) => {
-  return (
-    <button onClick={onClick} className="btn btn-ui">
-      Next
-    </button>
-  )
-}
+const NextButton = ({ onClick, index, totalQuestions, onFinish }) => {
+  const isLastQuestion = index === totalQuestions - 1;
+  const buttonLabel = isLastQuestion ? "Finish" : "Next";
 
-export default NextButton
+  return (
+    <button
+      onClick={isLastQuestion ? onFinish : onClick}
+      className='btn btn-ui'
+    >
+      {buttonLabel}
+    </button>
+  );
+};
+
+export default NextButton;
