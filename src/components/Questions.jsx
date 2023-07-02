@@ -1,9 +1,9 @@
+import { useQuiz } from "../context/QuizContext";
 import Options from "./Options";
-const Questions = ({
-  questions: { question, options, correctOption },
-  onAnswer,
-  answer,
-}) => {
+const Questions = ({ onAnswer, answer }) => {
+  const {
+    questions: { question, options, correctOption },
+  } = useQuiz();
   return (
     <div>
       <h4>{question}</h4>
@@ -11,7 +11,7 @@ const Questions = ({
         <Options
           options={options}
           key={options}
-          onAnswer={onAnswer}
+          onAnswer={next}
           answer={answer}
           correctOption={correctOption}
         />
